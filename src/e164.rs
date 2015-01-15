@@ -1,6 +1,8 @@
+use rustc_serialize::json;
+
 #[derive(RustcEncodable, RustcDecodable, Show)]
 pub struct NationalCode {
-    pub code_length: i8,
+    pub code_length: usize,
     pub strict: bool,
     pub known_codes: Vec<String>
 }
@@ -23,20 +25,48 @@ impl PartialEq for CountryCode {
     }
 }
 
-pub fn load() -> Vec<CountryCode>
-{
-    return vec!({CountryCode {code: "1".to_string(), national_destination_codes: NationalCode { code_length: 3, strict: false, known_codes: vec!({"".to_string()})}}});
+#[derive(RustcEncodable, RustcDecodable, Show)]
+pub struct Validator {
+  pub country_codes: Vec<CountryCode>
 }
 
-pub fn possible(phone_number: &str) -> bool
-{
-    let length = phone_number.len();
-    return length < 16 && length > 3;
+impl PartialEq for Validator {
+  fn eq(&self, other: &Validator) -> bool {
+    return self.country_codes == other.country_codes;
+  }
 }
 
-pub fn split(phone_number: &str) -> [&str; 3]
-{
-    let length = phone_number.len();
-    let country_code_section = phone_number[0..3].as_slice();
-    return [phone_number[0..1].as_slice(), phone_number[1..4].as_slice(), phone_number[4..length].as_slice()];
+impl Validator {
+
+    pub fn load() -> Validator
+    {
+        return Validator {country_codes: vec!({CountryCode {code: "1".to_string(), national_destination_codes: NationalCode { code_length: 3, strict: false, known_codes: vec!({"".to_string()})}}})};
+    }
+
+    pub fn possible<'a>(&'a self, phone_number: &'a str) -> bool
+    {
+        let length = phone_number.len();
+        return length < 16 && length > 3;
+    }
+
+    pub fn split<'a>(&'a self, phone_number: &'a str) -> [&str; 3]
+    {
+        let length = phone_number.len();
+        let country_code_section = phone_number[0..3].as_slice();
+        let mut cc_end = 0;
+        let mut nc_end = 0;
+        for code in self.country_codes.iter() {
+          let code_length = code.code.as_slice().len();
+          if code.code == phone_number[0..code_length].as_slice() {
+            let destination_code_end = code_length + code.national_destination_codes.code_length;
+            cc_end = code_length;
+            nc_end = destination_code_end;
+            break;
+          }
+        }
+        if cc_end == 0 || nc_end == 0 {
+          panic!("Unable to split the given phone number using the available country code list");
+        }
+        return [phone_number[0..cc_end].as_slice(), phone_number[cc_end..nc_end].as_slice(), phone_number[nc_end..length].as_slice()];
+    }
 }
