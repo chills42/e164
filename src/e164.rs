@@ -1,5 +1,3 @@
-use rustc_serialize::json;
-
 #[derive(RustcEncodable, RustcDecodable, Show)]
 pub struct NationalCode {
     pub code_length: usize,
@@ -52,7 +50,6 @@ impl Validator {
     pub fn split<'a>(&'a self, phone_number: &'a str) -> [&str; 3]
     {
         let length = phone_number.len();
-        let country_code_section = phone_number[0..3].as_slice();
         let mut cc_end = 0;
         let mut nc_end = 0;
         for code in self.country_codes.iter() {
