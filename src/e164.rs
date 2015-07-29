@@ -1,4 +1,4 @@
-#[derive(RustcEncodable, RustcDecodable, Show)]
+#[derive(RustcEncodable, RustcDecodable, Debug)]
 pub struct NationalCode {
     pub code_length: usize,
     pub strict: bool,
@@ -7,11 +7,11 @@ pub struct NationalCode {
 
 impl PartialEq for NationalCode {
     fn eq(&self, other: &NationalCode) -> bool {
-        return self.code_length == other.code_length && self.strict == other.strict && self.known_codes == other.known_codes;
+        self.code_length == other.code_length && self.strict == other.strict && self.known_codes == other.known_codes
     }
 }
 
-#[derive(RustcEncodable, RustcDecodable, Show)]
+#[derive(RustcEncodable, RustcDecodable, Debug)]
 pub struct CountryCode {
     pub code: String,
     pub national_destination_codes: NationalCode,
@@ -19,18 +19,18 @@ pub struct CountryCode {
 
 impl PartialEq for CountryCode {
     fn eq(&self, other: &CountryCode) -> bool {
-        return self.code == other.code && self.national_destination_codes == other.national_destination_codes
+        self.code == other.code && self.national_destination_codes == other.national_destination_codes
     }
 }
 
-#[derive(RustcEncodable, RustcDecodable, Show)]
+#[derive(RustcEncodable, RustcDecodable, Debug)]
 pub struct Validator {
   pub country_codes: Vec<CountryCode>
 }
 
 impl PartialEq for Validator {
   fn eq(&self, other: &Validator) -> bool {
-    return self.country_codes == other.country_codes;
+    self.country_codes == other.country_codes
   }
 }
 
@@ -53,8 +53,8 @@ impl Validator {
         let mut cc_end = 0;
         let mut nc_end = 0;
         for code in self.country_codes.iter() {
-          let code_length = code.code.as_slice().len();
-          if code.code == phone_number[0..code_length].as_slice() {
+          let code_length = code.code.len();
+          if code.code == phone_number[0..code_length] {
             let destination_code_end = code_length + code.national_destination_codes.code_length;
             cc_end = code_length;
             nc_end = destination_code_end;
@@ -64,6 +64,6 @@ impl Validator {
         if cc_end == 0 || nc_end == 0 {
           panic!("Unable to split the given phone number using the available country code list");
         }
-        return [phone_number[0..cc_end].as_slice(), phone_number[cc_end..nc_end].as_slice(), phone_number[nc_end..length].as_slice()];
+        [&phone_number[0..cc_end], &phone_number[cc_end..nc_end], &phone_number[nc_end..length]]
     }
 }
