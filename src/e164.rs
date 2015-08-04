@@ -1,37 +1,19 @@
-#[derive(RustcEncodable, RustcDecodable, Debug)]
+#[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
 pub struct NationalCode {
     pub code_length: usize,
     pub strict: bool,
     pub known_codes: Vec<String>
 }
 
-impl PartialEq for NationalCode {
-    fn eq(&self, other: &NationalCode) -> bool {
-        self.code_length == other.code_length && self.strict == other.strict && self.known_codes == other.known_codes
-    }
-}
-
-#[derive(RustcEncodable, RustcDecodable, Debug)]
+#[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
 pub struct CountryCode {
     pub code: String,
     pub national_destination_codes: NationalCode,
 }
 
-impl PartialEq for CountryCode {
-    fn eq(&self, other: &CountryCode) -> bool {
-        self.code == other.code && self.national_destination_codes == other.national_destination_codes
-    }
-}
-
-#[derive(RustcEncodable, RustcDecodable, Debug)]
+#[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
 pub struct Validator {
   pub country_codes: Vec<CountryCode>
-}
-
-impl PartialEq for Validator {
-  fn eq(&self, other: &Validator) -> bool {
-    self.country_codes == other.country_codes
-  }
 }
 
 impl Validator {
