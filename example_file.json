@@ -1,0 +1,6 @@
+{
+  "country_codes":[
+    {"code":"1","national_destination_codes":{"code_length":3,"strict":false,"known_codes":[""]}},
+    {"code":"44","national_destination_codes":{"code_length": 4, "strict":false, "known_codes":[""]}}
+  ]
+}

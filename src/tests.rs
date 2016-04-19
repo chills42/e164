@@ -3,7 +3,7 @@ use rustc_serialize::json;
 
 #[test]
 fn us_number_works() {
-    let validator = e164::Validator::load();
+    let validator = e164::Validator::default();
     let parsed = validator.split(&"13176376397");
     assert!(parsed[0] == "1");
     assert!(parsed[1] == "317");
@@ -12,7 +12,7 @@ fn us_number_works() {
 #[test]
 #[should_panic]
 fn unassigned_number_fails() {
-    let validator = e164::Validator::load();
+    let validator = e164::Validator::default();
     // We are trying to split an 895 country code, which is in a block reserved for future country
     // code expansion
     validator.split(&"8951234567890");
@@ -20,21 +20,21 @@ fn unassigned_number_fails() {
 
 #[test]
 fn possible_check_works() {
-    let validator = e164::Validator::load();
+    let validator = e164::Validator::default();
     assert!(validator.possible("447330153833333"));
 }
 
 #[test]
 #[should_panic]
 fn possible_check_catches_long() {
-    let validator = e164::Validator::load();
+    let validator = e164::Validator::default();
     assert!(validator.possible("4473300011177788"));
 }
 
 #[test]
 #[should_panic]
 fn possible_check_catches_short() {
-    let validator = e164::Validator::load();
+    let validator = e164::Validator::default();
     assert!(validator.possible("123"));
 }
 
@@ -54,7 +54,7 @@ fn reserialize_country_code() {
 #[test]
 fn load_validator_with_data()
 {
-    let validator = e164::Validator::load();
+    let validator = e164::Validator::default();
     let encoded = json::encode(&validator).unwrap();
     let decoded : e164::Validator = json::decode(&encoded).unwrap();
     assert_eq!(validator, decoded);
